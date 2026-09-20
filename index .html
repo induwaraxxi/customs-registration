@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customs – Company Registration</title>
+  <meta name="description" content="Register your company with Customs. Enter your TIN and business name to get started.">
+
+  <!-- Bootstrap 5 + Google Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --ink: #060a1c;
+      --deep: #0c1240;
+      --cyan: #3df0ff;
+      --violet: #8b5cff;
+      --text: #e8ecff;
+      --muted: #9ba7d9;
+      --line: rgba(120, 140, 255, .28);
+    }
+
+    html, body { height: 100%; }
+    body {
+      font-family: "Manrope", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(900px 600px at 85% -10%, rgba(139, 92, 255, .35), transparent 60%),
+        radial-gradient(800px 600px at -10% 110%, rgba(61, 240, 255, .18), transparent 60%),
+        linear-gradient(180deg, var(--deep), var(--ink));
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+
+    /* Animated network background (drawn in JS) */
+    #network {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Brand bar */
+    .brand {
+      font-family: "Chakra Petch", sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: .04em;
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .brand-mark {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      display: grid; place-items: center;
+      box-shadow: 0 0 22px rgba(61, 240, 255, .45);
+    }
+    .brand-mark svg { width: 20px; height: 20px; }
+
+    /* Hero text */
+    .hero-title {
+      font-family: "Chakra Petch", sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.3rem, 5.6vw, 4.2rem);
+      line-height: 1.05;
+      letter-spacing: -.01em;
+      margin-bottom: 1.1rem;
+    }
+    .hero-title .glow {
+      background: linear-gradient(90deg, var(--cyan), var(--violet) 70%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      background-size: 200% 100%;
+      animation: shimmer 6s ease-in-out infinite alternate;
+    }
+    @keyframes shimmer { to { background-position: 100% 0; } }
+
+    .hero-sub { color: var(--muted); font-size: 1.1rem; max-width: 34rem; }
+
+    .steps { list-style: none; padding: 0; margin: 2rem 0 0; display: grid; gap: .9rem; max-width: 30rem; }
+    .steps li { display: flex; gap: .85rem; align-items: flex-start; color: var(--muted); }
+    .steps b { color: var(--text); font-weight: 600; }
+    .steps .dot {
+      flex: none; width: 10px; height: 10px; margin-top: .5rem; border-radius: 50%;
+      background: var(--cyan); box-shadow: 0 0 12px var(--cyan);
+    }
+
+    /* Glass form card with a moving light border */
+    .card-wrap {
+      position: relative;
+      border-radius: 24px;
+      padding: 1.5px;
+      background: linear-gradient(120deg, var(--cyan), var(--violet), var(--cyan));
+      background-size: 250% 250%;
+      animation: borderflow 7s linear infinite;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .5), 0 0 60px rgba(139, 92, 255, .25);
+    }
+    @keyframes borderflow { 0% { background-position: 0% 50%; } 100% { background-position: 250% 50%; } }
+
+    .glass {
+      border-radius: 23px;
+      padding: clamp(1.4rem, 4vw, 2.4rem);
+      background: rgba(10, 16, 52, .82);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .glass h2 { font-family: "Chakra Petch", sans-serif; font-size: 1.5rem; margin-bottom: .25rem; }
+    .glass .lead-sm { color: var(--muted); font-size: .95rem; margin-bottom: 1.5rem; }
+
+    /* Fields */
+    .form-floating > .form-control {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 14px;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    .form-floating > textarea.form-control { min-height: 120px; }
+    .form-floating > label { color: var(--muted); }
+    .form-control:focus {
+      background: rgba(255, 255, 255, .07);
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 .25rem rgba(61, 240, 255, .18), 0 0 24px rgba(61, 240, 255, .18);
+      color: var(--text);
+    }
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label { color: var(--cyan); }
+    .req { color: #ff7ab8; }
+    .counter { font-size: .8rem; color: var(--muted); text-align: right; margin-top: .3rem; }
+
+    /* Button */
+    .btn-send {
+      position: relative;
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      padding: .95rem 1.2rem;
+      font-family: "Chakra Petch", sans-serif;
+      font-weight: 600;
+      font-size: 1.05rem;
+      letter-spacing: .03em;
+      color: #04122a;
+      background: linear-gradient(90deg, var(--cyan), var(--violet));
+      box-shadow: 0 10px 30px rgba(61, 240, 255, .25);
+      transition: transform .2s, box-shadow .2s, filter .2s;
+    }
+    .btn-send:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(139, 92, 255, .5); filter: brightness(1.08); }
+    .btn-send:active:not(:disabled) { transform: translateY(0); }
+    .btn-send:disabled { opacity: .75; cursor: progress; }
+    .btn-send:focus-visible, .btn-again:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+
+    /* Success state */
+    .success { text-align: center; padding: 1rem 0; }
+    .success svg { width: 96px; height: 96px; margin-bottom: 1rem; filter: drop-shadow(0 0 18px rgba(61, 240, 255, .6)); }
+    .success circle, .success path { fill: none; stroke: var(--cyan); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    .success circle { stroke-dasharray: 260; stroke-dashoffset: 260; animation: draw .7s ease forwards; }
+    .success path { stroke-dasharray: 60; stroke-dashoffset: 60; animation: draw .5s .55s ease forwards; }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+    .btn-again {
+      margin-top: 1rem; background: transparent; color: var(--text);
+      border: 1px solid var(--line); border-radius: 12px; padding: .6rem 1.2rem;
+    }
+    .btn-again:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .alert-custom {
+      background: rgba(255, 80, 120, .12);
+      border: 1px solid rgba(255, 110, 150, .5);
+      color: #ffc6d6;
+      border-radius: 12px;
+      font-size: .92rem;
+    }
+
+    footer { color: var(--muted); font-size: .85rem; }
+
+    /* One entrance sequence on page load */
+    .enter { opacity: 0; transform: translateY(18px); animation: enter .8s cubic-bezier(.2, .7, .2, 1) forwards; }
+    .enter.d1 { animation-delay: .1s; } .enter.d2 { animation-delay: .25s; } .enter.d3 { animation-delay: .45s; }
+    @keyframes enter { to { opacity: 1; transform: none; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .enter { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="network" aria-hidden="true"></canvas>
+
+  <div class="page">
+    <header class="container py-4">
+      <a class="brand" href="#">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#04122a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 6v6c0 5 3.8 8.6 9 10 5.2-1.4 9-5 9-10V6l-9-4Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+        </span>
+        Customs
+      </a>
+    </header>
+
+    <main class="container flex-grow-1 d-flex align-items-center pb-5">
+      <div class="row w-100 g-5 align-items-center">
+
+        <!-- Left: message -->
+        <div class="col-lg-6">
+          <h1 class="hero-title enter d1">Check your company's documents <span class="glow">with Customs.</span></h1>
+          <p class="hero-sub enter d2">Enter your TIN, business name and contact details. Our team receives them right away and follows up with you.</p>
+          <ul class="steps enter d3">
+            <li><span class="dot"></span><span><b>Fill in the form.</b> TIN, business name, email and contact number are required.</span></li>
+            <li><span class="dot"></span><span><b>We receive it instantly.</b> Your details are sent straight to our inbox.</span></li>
+            <li><span class="dot"></span><span><b>We contact you.</b> Expect a reply by email or phone once your documents are reviewed.</span></li>
+          </ul>
+        </div>
+
+        <!-- Right: form -->
+        <div class="col-lg-6">
+          <div class="card-wrap enter d3">
+            <div class="glass">
+
+              <div id="formView">
+                <h2>Company registration</h2>
+                <p class="lead-sm">Fields marked <span class="req">*</span> are required.</p>
+
+                <form id="regForm" novalidate>
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="tin" name="TIN Number" placeholder="TIN number"
+                           required minlength="5" maxlength="20" pattern="[A-Za-z0-9\-]{5,20}" autocomplete="off" inputmode="text">
+                    <label for="tin">TIN number <span class="req">*</span></label>
+                    <div class="invalid-feedback">Enter your TIN using letters, numbers or hyphens (5–20 characters).</div>
+                  </div>
+
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="business" name="Business Name" placeholder="Business name"
+                           required maxlength="120" autocomplete="organization">
+                    <label for="business">Business name <span class="req">*</span></label>
+                    <div class="invalid-feedback">Enter your business name.</div>
+                  </div>
+
+                  <div class="form-floating mb-3">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Email address"
+                           required maxlength="120" autocomplete="email" inputmode="email">
+                    <label for="email">Email address <span class="req">*</span></label>
+                    <div class="invalid-feedback">Enter a valid email address, like name@example.com.</div>
+                  </div>
+
+                  <div class="form-floating mb-3">
+                    <input type="tel" class="form-control" id="phone" name="Contact Number" placeholder="Contact number"
+                           required pattern="[0-9+\-\s()]{7,20}" maxlength="20" autocomplete="tel" inputmode="tel">
+                    <label for="phone">Contact number <span class="req">*</span></label>
+                    <div class="invalid-feedback">Enter a valid contact number (7–20 digits; you can use +, spaces and hyphens).</div>
+                  </div>
+
+                  <div class="mb-3">
+                    <div class="form-floating">
+                      <textarea class="form-control" id="description" name="Description" placeholder="Description" maxlength="500"></textarea>
+                      <label for="description">Description (optional)</label>
+                    </div>
+                    <div class="counter"><span id="count">0</span> / 500</div>
+                  </div>
+
+                  <!-- Spam trap: real people never see or fill this -->
+                  <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+
+                  <div id="errorBox" class="alert-custom p-3 mb-3 d-none" role="alert"></div>
+
+                  <button type="submit" class="btn-send" id="sendBtn">
+                    <span id="sendLabel">Send registration</span>
+                    <span id="sendSpinner" class="spinner-border spinner-border-sm ms-2 d-none" aria-hidden="true"></span>
+                  </button>
+                </form>
+              </div>
+
+              <div id="successView" class="success d-none" role="status" aria-live="polite">
+                <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="41"/><path d="m32 52 12 12 24-27"/></svg>
+                <h2>Registration sent</h2>
+                <p class="lead-sm mb-0">We received your details and will contact you by email.</p>
+                <button type="button" class="btn-again" id="againBtn">Register another company</button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <footer class="container pb-4 text-center">© <span id="year"></span> Customs. All rights reserved.</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    /* =========================================================
+       EMAIL SETUP – your Formspree form URL. Submissions are
+       forwarded to the email address on your Formspree account.
+       ========================================================= */
+    const FORM_ENDPOINT = "https://formspree.io/f/mdekekbk";
+
+    /* ---------- Form logic ---------- */
+    const form = document.getElementById("regForm");
+    const formView = document.getElementById("formView");
+    const successView = document.getElementById("successView");
+    const errorBox = document.getElementById("errorBox");
+    const sendBtn = document.getElementById("sendBtn");
+    const sendLabel = document.getElementById("sendLabel");
+    const sendSpinner = document.getElementById("sendSpinner");
+    const desc = document.getElementById("description");
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+    desc.addEventListener("input", () => (document.getElementById("count").textContent = desc.value.length));
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorBox.classList.add("d-none");
+
+      if (!form.checkValidity()) {
+        form.classList.add("was-validated");
+        form.querySelector(":invalid").focus();
+        return;
+      }
+
+      if (FORM_ENDPOINT.includes("YOUR_FORM_ID")) {
+        showError("Email is not connected yet. Add your Formspree form URL to FORM_ENDPOINT in the page script.");
+        return;
+      }
+
+      sendBtn.disabled = true;
+      sendLabel.textContent = "Sending";
+      sendSpinner.classList.remove("d-none");
+
+      try {
+        const data = new FormData(form);
+        data.append("_subject", "New company registration – " + document.getElementById("business").value.trim());
+        const res = await fetch(FORM_ENDPOINT, { method: "POST", body: data, headers: { Accept: "application/json" } });
+        if (!res.ok) throw new Error("Request failed");
+        formView.classList.add("d-none");
+        successView.classList.remove("d-none");
+      } catch (err) {
+        showError("We could not send your registration. Check your connection and try again.");
+      } finally {
+        sendBtn.disabled = false;
+        sendLabel.textContent = "Send registration";
+        sendSpinner.classList.add("d-none");
+      }
+    });
+
+    document.getElementById("againBtn").addEventListener("click", () => {
+      form.reset();
+      form.classList.remove("was-validated");
+      document.getElementById("count").textContent = "0";
+      successView.classList.add("d-none");
+      formView.classList.remove("d-none");
+      document.getElementById("tin").focus();
+    });
+
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.classList.remove("d-none");
+    }
+
+    /* ---------- Animated network background ---------- */
+    (function () {
+      const canvas = document.getElementById("network");
+      const ctx = canvas.getContext("2d");
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let w, h, dpr, nodes = [];
+      const mouse = { x: -9999, y: -9999 };
+
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        w = window.innerWidth; h = window.innerHeight;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const count = Math.max(30, Math.min(90, Math.floor((w * h) / 16000)));
+        nodes = Array.from({ length: count }, () => ({
+          x: Math.random() * w, y: Math.random() * h,
+          vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35,
+          r: Math.random() * 1.6 + .8
+        }));
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        const link = Math.min(150, w / 5);
+        for (let i = 0; i < nodes.length; i++) {
+          const a = nodes[i];
+          if (!reduce) {
+            a.x += a.vx; a.y += a.vy;
+            if (a.x < 0 || a.x > w) a.vx *= -1;
+            if (a.y < 0 || a.y > h) a.vy *= -1;
+          }
+          for (let j = i + 1; j < nodes.length; j++) {
+            const b = nodes[j];
+            const d = Math.hypot(a.x - b.x, a.y - b.y);
+            if (d < link) {
+              ctx.strokeStyle = `rgba(110,150,255,${(1 - d / link) * .35})`;
+              ctx.lineWidth = 1;
+              ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+            }
+          }
+          const m = Math.hypot(a.x - mouse.x, a.y - mouse.y);
+          if (m < 170) {
+            ctx.strokeStyle = `rgba(61,240,255,${(1 - m / 170) * .6})`;
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+          }
+          ctx.fillStyle = "rgba(61,240,255,.9)";
+          ctx.shadowColor = "#3df0ff"; ctx.shadowBlur = 8;
+          ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+        if (!reduce) requestAnimationFrame(draw);
+      }
+
+      window.addEventListener("resize", () => { resize(); if (reduce) draw(); });
+      window.addEventListener("pointermove", (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+      window.addEventListener("pointerleave", () => { mouse.x = mouse.y = -9999; });
+      resize(); draw();
+    })();
+  </script>
+</body>
+</html>
